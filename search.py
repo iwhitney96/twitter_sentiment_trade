@@ -1,12 +1,10 @@
 import get_twitter_data
+from get_sentiment import sentiment_retrieve
 
-keyword = 'iphone'
+keyword = 'trump'
 time = 'today'
 twitterData = get_twitter_data.TwitterData()
 tweets = twitterData.getTwitterData(keyword, time)
-for x in tweets:
-    for y in tweets[x]:
-        print y
-#end loop
-
-#print tweets
+print tweets
+sentiment = sentiment_retrieve(tweets)
+print sentiment

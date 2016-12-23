@@ -1,23 +1,44 @@
-import argparse
-import urllib
-import urllib2
 import json
-import datetime
-import random
-import os
-import pickle
-from datetime import timedelta
-import oauth2
-
+import argparse
+import re
 from watson_developer_cloud import AlchemyLanguageV1
 
+#start process_tweet
+def processText(tweet):
+    # process the tweets
 
-alchemy_language = AlchemyLanguageV1(api_key='ae2125f5f990fa0a81af8ad297b0cda45ffffe29')
+    #Convert to lower case
+    tweet = tweet.lower()
+    #Convert www.* or https?://* to URL
+    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL',tweet)
+    #Convert @username to AT_USER
+    tweet = re.sub('@[^\s]+','AT_USER',tweet)
+    #Remove additional white spaces
+    tweet = re.sub('[\s]+', ' ', tweet)
+    #Replace #word with word
+    tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
+    #trim
+    tweet = tweet.strip('\'"')
+    return tweet
+#end
 
-print(json.dumps(
-  alchemy_language.combined(
-    text='Kellyanne Conway will be the counseler to President Trump. So happy for that!',
-    extract='entities,keywords',
-    sentiment=1,
-    max_items=1),
-  indent=2))
+#start sentiment_retrieve
+#takes inputText, processes it, and returns JSON from Watson
+def sentiment_retrieve(inputDict):
+    alchemy_language = AlchemyLanguageV1(api_key='ae2125f5f990fa0a81af8ad297b0cda45ffffe29')
+    tweet = ''
+    for x in inputDict:
+        for y in inputDict[0]:
+            tweet+=y
+    #end loop
+    processedTweets = processText(tweet)
+    print processedTweets
+    processedTweets = 'text=' + processedTweets
+    return json.dumps(
+        alchemy_language.combined(
+        processedTweets,
+        extract='doc-sentiment,entities',
+        sentiment=1,
+        max_items=1),
+        indent=2)
+#end

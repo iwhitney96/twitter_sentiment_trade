@@ -1,8 +1,7 @@
 import get_twitter_data
 from get_sentiment import sentiment_retrieve
-
-keyword = 'trump'
-time = 'today'
+keyword = 'Vacation'
+time = '3'
 twitterData = get_twitter_data.TwitterData()
 tweets = twitterData.getTwitterData(keyword, time)
 print tweets

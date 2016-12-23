@@ -22,25 +22,25 @@ class TwitterData:
         #end loop
     #end
 
-    #start getWeeksData
+    #start getWeeksData, can either do
     def getTwitterData(self, keyword, time):
         self.weekTweets = {}
+
         if(time == 'lastweek'):
             for i in range(0,6):
                 params = {'since': self.weekDates[i+1], 'until': self.weekDates[i]}
                 self.weekTweets[i] = self.getData(keyword, params)
             #end loop
 
-            #Write data to a pickle file
-            filename = 'data/weekTweets/weekTweets_'+urllib.unquote(keyword.replace("+", " "))+'_'+str(int(random.random()*10000))+'.txt'
-            outfile = open(filename, 'wb')
-            pickle.dump(self.weekTweets, outfile)
-            outfile.close()
         elif(time == 'today'):
             for i in range(0,1):
                 params = {'since': self.weekDates[i+1], 'until': self.weekDates[i]}
                 self.weekTweets[i] = self.getData(keyword, params)
             #end loop
+        elif(type(time) == int):
+            for i in range(0, time):
+                params = {'since': self.weekDates[i+1], 'until': self.weekdates[i]}
+                self.weekTweets[i] = self.getData(keyword, params)
         return self.weekTweets
     '''
         inpfile = open('data/weekTweets/weekTweets_obama_7303.txt')
@@ -106,7 +106,6 @@ class TwitterData:
                 data[key] = value
 
         url += urllib.urlencode(data)
-
         response = self.oauth_req(url)
         jsonData = json.loads(response)
         tweets = []

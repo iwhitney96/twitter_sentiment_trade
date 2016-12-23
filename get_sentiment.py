@@ -10,9 +10,9 @@ def processText(tweet):
     #Convert to lower case
     tweet = tweet.lower()
     #Convert www.* or https?://* to URL
-    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL',tweet)
+    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))',' ',tweet)
     #Convert @username to AT_USER
-    tweet = re.sub('@[^\s]+','AT_USER',tweet)
+    tweet = re.sub('@[^\s]+',' ',tweet)
     #Remove additional white spaces
     tweet = re.sub('[\s]+', ' ', tweet)
     #Replace #word with word
@@ -27,18 +27,17 @@ def processText(tweet):
 def sentiment_retrieve(inputDict):
     alchemy_language = AlchemyLanguageV1(api_key='ae2125f5f990fa0a81af8ad297b0cda45ffffe29')
     tweet = ''
-    for x in inputDict:
-        for y in inputDict[0]:
+    for x in range(0, len(inputDict)):
+        for y in inputDict[x]:
             tweet+=y
     #end loop
     processedTweets = processText(tweet)
-    print processedTweets
     processedTweets = 'text=' + processedTweets
     return json.dumps(
         alchemy_language.combined(
         processedTweets,
         extract='doc-sentiment,entities',
         sentiment=1,
-        max_items=1),
+        max_items=8),
         indent=2)
 #end

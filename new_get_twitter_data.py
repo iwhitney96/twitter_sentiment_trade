@@ -29,13 +29,13 @@ class TwitterData:
         if(time == 'lastweek'):
             for i in range(0,6):
                 params = {'since': self.weekDates[i+1], 'until': self.weekDates[i]}
-                self.weekTweets[i] = self.getData(keyword, option, params)
+                self.weekTweets[i] = self.getData(keyword, params, option)
             #end loop
 
         elif(time == 'today'):
             for i in range(0,1):
                 params = {'since': self.weekDates[i+1], 'until': self.weekDates[i]}
-                self.weekTweets[i] = self.getData(keyword, option, params)
+                self.weekTweets[i] = self.getData(keyword, params, option)
             #end loop
         elif(type(time) == int):
             for i in range(0, time):
@@ -95,18 +95,14 @@ class TwitterData:
       return content
 
     #start getTwitterData
-    def getData(self, keyword, option, params = {}):
+    def getData(self, keyword, params = {}, option):
         maxTweets = 50
-        url = 'https://api.twitter.com/1.1/search/tweets.json?'
-
-        data = {'q': keyword, 'lang': 'en', 'result_type': 'recent', 'count': maxTweets, 'include_entities': 0}
-
-        if(option == 'general'):
+        if(option == general):
             url = 'https://api.twitter.com/1.1/search/tweets.json?'
             data = {'q': keyword, 'lang': 'en', 'result_type': 'recent', 'count': maxTweets, 'include_entities': 0}
-        else:
+        elif(option ==):
             url = 'https://api.twitter.com/1.1/lists/statuses.json?'
-            data = {'result_type': 'recent', 'count': maxTweets, 'include_entities': 'false', 'owner_screen_name': self.parse_config().get('screen_name'), 'slug': option }
+            data = {'result_type': 'recent', 'count': maxTweets, 'include_entities': 0, 'list_id': }
 
 
         #Add if additional params are passed
@@ -115,26 +111,17 @@ class TwitterData:
                 data[key] = value
 
         url += urllib.urlencode(data)
+        url = "https://api.twitter.com/1.1/lists/statuses.json?slug=data-explorer&owner_screen_name=wheelockcapital"
         response = self.oauth_req(url)
         jsonData = json.loads(response)
         print jsonData
-        print option
         tweets = []
-        if (option == 'general'):
-            if 'errors' in jsonData:
-                print "API Error"
-                print jsonData['errors']
-            else:
-                for item in jsonData['statuses']:
-                    tweets.append(item['text'])
+        if 'errors' in jsonData:
+            print "API Error"
+            print jsonData['errors']
         else:
-            if 'errors' in jsonData:
-                print "API Error"
-                print jsonData['errors']
-            else:
-                for x in jsonData:
-                    print x
-                    tweets.append(x['text'])
+            for item in jsonData['text']:
+                tweets.append(item)
         return tweets
     #end
 

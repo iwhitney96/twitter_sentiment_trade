@@ -32,23 +32,30 @@ class TwitterData:
                 self.weekTweets[i] = self.getData(keyword, option, params)
             #end loop
 
+        elif(time == 'pastthree'):
+            for i in range(0,2):
+                params = {'since': self.weekDates[i+1], 'until': self.weekDates[i]}
+                self.weekTweets[i] = self.getData(keyword, option, params)
+            #end loop
+        elif(time == 'beginweek'):
+            for i in range(3,6):
+                params = {'since': self.weekDates[i+1], 'until': self.weekDates[i]}
+                self.weekTweets[i - 3] = self.getData(keyword, option, params)
+            #end loop
         elif(time == 'today'):
             for i in range(0,1):
                 params = {'since': self.weekDates[i+1], 'until': self.weekDates[i]}
                 self.weekTweets[i] = self.getData(keyword, option, params)
             #end loop
+
         elif(type(time) == int):
             for i in range(0, time):
                 params = {'since': self.weekDates[i+1], 'until': self.weekDates[i]}
                 self.weekTweets[i] = self.getData(keyword, params, option)
         return self.weekTweets
-    '''
-        inpfile = open('data/weekTweets/weekTweets_obama_7303.txt')
-        self.weekTweets = pickle.load(inpfile)
-        inpfile.close()
-        return self.weekTweets
-    '''
     #end
+
+
 
     def parse_config(self):
       config = {}
@@ -96,7 +103,7 @@ class TwitterData:
 
     #start getTwitterData
     def getData(self, keyword, option, params = {}):
-        maxTweets = 50
+        maxTweets = 100
         url = 'https://api.twitter.com/1.1/search/tweets.json?'
 
         data = {'q': keyword, 'lang': 'en', 'result_type': 'recent', 'count': maxTweets, 'include_entities': 0}
@@ -117,8 +124,7 @@ class TwitterData:
         url += urllib.urlencode(data)
         response = self.oauth_req(url)
         jsonData = json.loads(response)
-        print jsonData
-        print option
+
         tweets = []
         if (option == 'general'):
             if 'errors' in jsonData:
@@ -133,7 +139,6 @@ class TwitterData:
                 print jsonData['errors']
             else:
                 for x in jsonData:
-                    print x
                     tweets.append(x['text'])
         return tweets
     #end

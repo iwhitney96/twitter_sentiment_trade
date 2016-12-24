@@ -2,9 +2,11 @@ import json
 import argparse
 import re
 import os
+from load_data import get_config
 
 from watson_developer_cloud import AlchemyLanguageV1
 
+#thanks to Ravikiran Janardhana for the process text and get_config
 #start process_tweet
 def processText(tweet):
     # process the tweets
@@ -23,33 +25,12 @@ def processText(tweet):
     tweet = tweet.strip('\'"')
     return tweet
 #end
-'''
-def get_config():
-    config = {}
-    if os.path.exists('config.json'):
-        with open('config.json') as f:
-            print json.load(f)
-            config.update(json.load(f))
-    #end
-    else:
-        print 'config.json is not present'
-    #end
-    return config
-    '''
-def get_config():
-  config = {}
-  # from file args
-  if os.path.exists('config.json'):
-      with open('config.json') as f:
-          config.update(json.load(f))
 
-  return config
 
 #start sentiment_retrieve
 #takes inputText, processes it, and returns JSON from Watson
 def sentiment_retrieve(inputDict):
     config = get_config()
-    print config
     alchemy_language = AlchemyLanguageV1(api_key=config.get("alchemy_api"))
     tweet = ''
     for x in range(0, len(inputDict)):
@@ -58,11 +39,9 @@ def sentiment_retrieve(inputDict):
     #end loop
     processedTweets = processText(tweet)
     processedTweets = 'text=' + processedTweets
-    return json.dumps(
-        alchemy_language.combined(
+    return alchemy_language.combined(
         processedTweets,
-        extract='doc-sentiment,entities',
+        extract='doc-sentiment',
         sentiment=1,
-        max_items=8),
-        indent=2)
+        max_items=8)
 #end

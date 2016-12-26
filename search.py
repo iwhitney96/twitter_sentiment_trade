@@ -2,19 +2,21 @@ import get_twitter_data
 import json
 import csv
 from get_sentiment import sentiment_retrieve
+from post_twitter_data import post_data
 
 keyword = '$AAPL'
 
 
 twitterData = get_twitter_data.TwitterData()
 
-#remember cashtag idea
 tweets = twitterData.getTwitterData(keyword, 'pastthree', 'general')
 sentiment = sentiment_retrieve(tweets)
 print sentiment['docSentiment']['score']
 tweets = twitterData.getTwitterData(keyword, 'beginweek', 'general')
 sentiment = sentiment_retrieve(tweets)
 print sentiment['docSentiment']['score']
+
+post_data('Hello World!')
 
 
 

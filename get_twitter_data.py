@@ -106,8 +106,6 @@ class TwitterData:
         maxTweets = 100
         url = 'https://api.twitter.com/1.1/search/tweets.json?'
 
-        data = {'q': keyword, 'lang': 'en', 'result_type': 'recent', 'count': maxTweets, 'include_entities': 0}
-
         if(option == 'general'):
             url = 'https://api.twitter.com/1.1/search/tweets.json?'
             data = {'q': keyword, 'lang': 'en', 'result_type': 'recent', 'count': maxTweets, 'include_entities': 0}

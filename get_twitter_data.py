@@ -9,6 +9,8 @@ import pickle
 from datetime import timedelta
 import oauth2
 
+#thanks to Ravikiran Janardhana for much of this file
+
 class TwitterData:
     #start __init__
     def __init__(self):
@@ -106,13 +108,15 @@ class TwitterData:
         maxTweets = 100
         url = 'https://api.twitter.com/1.1/search/tweets.json?'
 
-        if(option == 'general'):
+        if(option == 'search'):
             url = 'https://api.twitter.com/1.1/search/tweets.json?'
             data = {'q': keyword, 'lang': 'en', 'result_type': 'recent', 'count': maxTweets, 'include_entities': 0}
-        else:
+        elif(option == 'list'):
             url = 'https://api.twitter.com/1.1/lists/statuses.json?'
             data = {'result_type': 'recent', 'count': maxTweets, 'include_entities': 'false', 'owner_screen_name': self.parse_config().get('screen_name'), 'slug': option }
-
+        else:
+            print 'ERROR: Option needs to be general or list'
+            return
 
         #Add if additional params are passed
         if params:
@@ -124,7 +128,7 @@ class TwitterData:
         jsonData = json.loads(response)
 
         tweets = []
-        if (option == 'general'):
+        if (option == 'search'):
             if 'errors' in jsonData:
                 print "API Error"
                 print jsonData['errors']
@@ -141,4 +145,21 @@ class TwitterData:
         return tweets
     #end
 
+    def post_data(self, text):
+
+        if (len(text) > 140):
+            print 'Error tweet is too long to post!'
+            return
+
+        url = 'https://api.twitter.com/1.1/statuses/update.json?'
+
+        data = {'status': text}
+        url += urllib.urlencode(data)
+        response = self.oauth_req(url, "POST")
+
+        jsonData = json.loads(response)
+        if 'errors' in jsonData:
+            print "API Error"
+            print jsonData['errors']
+    #end
 #end class
